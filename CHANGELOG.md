@@ -20,4 +20,5 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Replaced generated sample code with the initial `io.github.ascasso.garmin.livetrack` API, immutable telemetry/configuration records, token-redacted session references, exception hierarchy, and focused JUnit tests.
 - Added a manually invoked `integrationTest` suite for optional live Garmin session checks and documented the workflow in `TESTING.md`.
 - Added AssertJ Core 3.27.7 as the preferred assertion library and migrated existing test assertions to AssertJ.
+- Added Gradle test logging configuration and documented the no-SLF4J-until-needed test diagnostics policy.
 - Updated JUnit Jupiter from 6.0.1 to 6.1.0 after verifying no documented breaking changes affect the current test suite.

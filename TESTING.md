@@ -12,6 +12,14 @@ These tests must not call Garmin or require live credentials, active sessions, o
 
 Use JUnit Jupiter for test execution and AssertJ Core for assertions. New or rewritten assertions should prefer AssertJ's fluent `assertThat` and `assertThatThrownBy` APIs.
 
+## Test Diagnostics
+
+Tests should rely on assertions and Gradle/JUnit failure reporting rather than committed `System.out`, `System.err`, or logging output.
+
+The build configures Gradle's built-in `testLogging` for failed and skipped tests with full exception output. This keeps successful test runs quiet while making failures useful.
+
+Do not add SLF4J, Logback, or another logging dependency to the test suite unless there is a concrete diagnostic need, such as testing production logging behavior or adding carefully redacted integration-test diagnostics.
+
 ## Manual Garmin Integration Tests
 
 The `integrationTest` suite is reserved for rare manual checks against a live Garmin LiveTrack session. It is not wired into `check`, and the live test is skipped unless a session URL is supplied explicitly.
