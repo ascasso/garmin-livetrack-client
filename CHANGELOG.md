@@ -26,4 +26,5 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added `LiveTrackClient.resolveActiveSession(...)` for resolving stable Garmin profile pages to optional active session references.
 - Added profile-resolution unit coverage for inactive profile pages, redirects, embedded session links, escaped Garmin JavaScript URLs, invalid profile names, and HTTP errors.
 - Added optional `GARMIN_LIVETRACK_PROFILE_NAME` manual integration testing for `https://live.garmin.com/{profileName}`.
+- Added `GARMIN_LIVETRACK_EXPECT_ACTIVE` for stricter manual integration testing when a Garmin profile should currently expose an active session.
 - Added redaction for Garmin session tokens embedded in `/token/...` path segments.

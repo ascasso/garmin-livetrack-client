@@ -42,3 +42,9 @@ GARMIN_LIVETRACK_PROFILE_NAME='ascasso' ./gradlew integrationTest
 
 The profile resolution test accepts both outcomes: an active session reference when Garmin exposes one, or an empty result when the profile currently has no public live session.
 Profile resolution checks the stable Garmin URL `https://live.garmin.com/{profileName}` and must not print or commit resolved session URLs or tokens.
+
+When you know the profile has an active session and want the test to fail if resolution returns empty, opt into the stricter assertion:
+
+```bash
+GARMIN_LIVETRACK_PROFILE_NAME='ascasso' GARMIN_LIVETRACK_EXPECT_ACTIVE='true' ./gradlew integrationTest --rerun-tasks
+```
