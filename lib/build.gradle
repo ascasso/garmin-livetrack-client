@@ -25,7 +25,7 @@ testing {
         // Configure the built-in test suite
         test {
             // Use JUnit Jupiter test framework
-            useJUnitJupiter('6.0.1')
+            useJUnitJupiter('6.1.0')
 
             dependencies {
                 implementation libs.assertj.core
@@ -33,7 +33,7 @@ testing {
         }
 
         integrationTest(JvmTestSuite) {
-            useJUnitJupiter('6.0.1')
+            useJUnitJupiter('6.1.0')
 
             dependencies {
                 implementation project()
