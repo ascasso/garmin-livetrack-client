@@ -1,6 +1,6 @@
 package io.github.ascasso.garmin.livetrack.exception;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +9,6 @@ class LiveTrackExceptionTest {
     void httpExceptionDoesNotIncludeTokens() {
         LiveTrackHttpException exception = new LiveTrackHttpException(404);
 
-        assertFalse(exception.toString().contains("token"));
+        assertThat(exception).asString().doesNotContain("token");
     }
 }

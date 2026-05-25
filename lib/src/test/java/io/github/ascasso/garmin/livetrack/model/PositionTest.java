@@ -1,7 +1,7 @@
 package io.github.ascasso.garmin.livetrack.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,17 +10,19 @@ class PositionTest {
     void acceptsValidCoordinates() {
         Position position = new Position(45.123, -122.456);
 
-        assertEquals(45.123, position.latitude());
-        assertEquals(-122.456, position.longitude());
+        assertThat(position.latitude()).isEqualTo(45.123);
+        assertThat(position.longitude()).isEqualTo(-122.456);
     }
 
     @Test
     void rejectsInvalidLatitude() {
-        assertThrows(IllegalArgumentException.class, () -> new Position(91.0, 10.0));
+        assertThatThrownBy(() -> new Position(91.0, 10.0))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void rejectsInvalidLongitude() {
-        assertThrows(IllegalArgumentException.class, () -> new Position(10.0, 181.0));
+        assertThatThrownBy(() -> new Position(10.0, 181.0))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

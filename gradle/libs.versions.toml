@@ -2,7 +2,9 @@
 # https://docs.gradle.org/current/userguide/version_catalogs.html#sec::toml-dependencies-format
 
 [versions]
+assertj = "3.27.7"
 jackson = "3.1.2"
 
 [libraries]
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson" }

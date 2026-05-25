@@ -1,8 +1,7 @@
 package io.github.ascasso.garmin.livetrack.model;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.net.URI;
 import java.time.Instant;
@@ -19,8 +18,9 @@ class TelemetrySnapshotTest {
 
         trackPoints.clear();
 
-        assertTrue(trackPoints.isEmpty());
-        assertFalse(snapshot.isEmpty());
-        assertThrows(UnsupportedOperationException.class, () -> snapshot.trackPoints().add(null));
+        assertThat(trackPoints).isEmpty();
+        assertThat(snapshot.isEmpty()).isFalse();
+        assertThatThrownBy(() -> snapshot.trackPoints().add(null))
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 }

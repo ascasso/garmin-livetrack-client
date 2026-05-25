@@ -10,6 +10,8 @@ Run the default offline test suite with:
 
 These tests must not call Garmin or require live credentials, active sessions, or network access.
 
+Use JUnit Jupiter for test execution and AssertJ Core for assertions. New or rewritten assertions should prefer AssertJ's fluent `assertThat` and `assertThatThrownBy` APIs.
+
 ## Manual Garmin Integration Tests
 
 The `integrationTest` suite is reserved for rare manual checks against a live Garmin LiveTrack session. It is not wired into `check`, and the live test is skipped unless a session URL is supplied explicitly.

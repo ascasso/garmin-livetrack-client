@@ -26,6 +26,10 @@ testing {
         test {
             // Use JUnit Jupiter test framework
             useJUnitJupiter('6.0.1')
+
+            dependencies {
+                implementation libs.assertj.core
+            }
         }
 
         integrationTest(JvmTestSuite) {
@@ -33,6 +37,7 @@ testing {
 
             dependencies {
                 implementation project()
+                implementation libs.assertj.core
             }
 
             targets {

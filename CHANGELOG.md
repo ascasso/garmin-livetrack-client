@@ -17,3 +17,4 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added Git repository metadata and ignore rules suitable for Gradle, IntelliJ IDEA, and GitHub.
 - Replaced generated sample code with the initial `io.github.ascasso.garmin.livetrack` API, immutable telemetry/configuration records, token-redacted session references, exception hierarchy, and focused JUnit tests.
 - Added a manually invoked `integrationTest` suite for optional live Garmin session checks and documented the workflow in `TESTING.md`.
+- Added AssertJ Core 3.27.7 as the preferred assertion library and migrated existing test assertions to AssertJ.

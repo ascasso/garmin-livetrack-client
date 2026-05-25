@@ -1,7 +1,7 @@
 package io.github.ascasso.garmin.livetrack.config;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
@@ -9,11 +9,12 @@ import org.junit.jupiter.api.Test;
 class LiveTrackClientOptionsTest {
     @Test
     void providesDefaultRequestTimeout() {
-        assertEquals(Duration.ofSeconds(30), LiveTrackClientOptions.defaults().requestTimeout());
+        assertThat(LiveTrackClientOptions.defaults().requestTimeout()).isEqualTo(Duration.ofSeconds(30));
     }
 
     @Test
     void rejectsNonPositiveTimeout() {
-        assertThrows(IllegalArgumentException.class, () -> new LiveTrackClientOptions(Duration.ZERO));
+        assertThatThrownBy(() -> new LiveTrackClientOptions(Duration.ZERO))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

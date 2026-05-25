@@ -1,7 +1,7 @@
 package io.github.ascasso.garmin.livetrack.internal;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
@@ -16,20 +16,21 @@ class TelemetryJsonParserTest {
     void parsesEmptyTrackPointsAsEmptySnapshot() {
         TelemetrySnapshot snapshot = parser.parse(sessionReference, "{\"trackPoints\":[]}");
 
-        assertTrue(snapshot.isEmpty());
+        assertThat(snapshot.isEmpty()).isTrue();
     }
 
     @Test
     void parsesAbsentTrackPointsAsEmptySnapshot() {
         TelemetrySnapshot snapshot = parser.parse(sessionReference, "{\"unexpected\":true}");
 
-        assertTrue(snapshot.isEmpty());
+        assertThat(snapshot.isEmpty()).isTrue();
     }
 
     @Test
     void rejectsTrackPointWithoutRequiredCoordinates() {
-        assertThrows(IllegalArgumentException.class, () -> parser.parse(
-                sessionReference,
-                "{\"trackPoints\":[{\"timestamp\":\"2026-05-24T12:00:00Z\",\"latitude\":45.0}]}"));
+        assertThatThrownBy(() -> parser.parse(
+                        sessionReference,
+                        "{\"trackPoints\":[{\"timestamp\":\"2026-05-24T12:00:00Z\",\"latitude\":45.0}]}"))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

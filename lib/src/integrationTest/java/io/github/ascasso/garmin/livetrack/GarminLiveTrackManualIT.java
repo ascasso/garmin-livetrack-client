@@ -1,7 +1,6 @@
 package io.github.ascasso.garmin.livetrack;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
@@ -15,14 +14,14 @@ class GarminLiveTrackManualIT {
     void fetchesTelemetryFromGarminSessionUrl() {
         URI sessionUri = URI.create(System.getProperty("garmin.livetrack.sessionUrl"));
         String host = sessionUri.getHost();
-        assertNotNull(host);
-        assertTrue(host.equals("garmin.com") || host.endsWith(".garmin.com"));
+        assertThat(host).isNotNull();
+        assertThat(host.equals("garmin.com") || host.endsWith(".garmin.com")).isTrue();
 
         LiveTrackClient client = new LiveTrackClient();
 
         TelemetrySnapshot snapshot = client.fetchTelemetry(SessionReference.of(sessionUri));
 
-        assertNotNull(snapshot);
-        assertNotNull(snapshot.trackPoints());
+        assertThat(snapshot).isNotNull();
+        assertThat(snapshot.trackPoints()).isNotNull();
     }
 }

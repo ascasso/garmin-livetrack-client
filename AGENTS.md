@@ -44,6 +44,7 @@ Keep `internal` package types package-private where possible.
 ## Testing Expectations
 
 - Use JUnit Jupiter.
+- Use AssertJ Core as the preferred assertion library for test assertions.
 - Test parsing of valid telemetry, empty `trackPoints`, unknown fields, malformed JSON, missing required fields, redirect/session resolution, and token redaction behavior.
 - Prefer Java's built-in lightweight HTTP server or local test doubles over real Garmin network calls.
 - Do not require live Garmin credentials or active sessions for normal test execution.
@@ -63,3 +64,4 @@ Keep `internal` package types package-private where possible.
 - Remove Gradle init sample dependencies unless they become genuinely needed.
 - Jackson should be an implementation dependency in the core library.
 - JUnit Jupiter remains a test dependency through Gradle's test suite configuration.
+- AssertJ Core should remain a test-only dependency for fluent assertions.

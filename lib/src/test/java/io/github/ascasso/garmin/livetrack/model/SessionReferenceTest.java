@@ -1,7 +1,6 @@
 package io.github.ascasso.garmin.livetrack.model;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
 import org.junit.jupiter.api.Test;
@@ -15,10 +14,9 @@ class SessionReferenceTest {
 
         String rendered = reference.toString();
 
-        assertFalse(rendered.contains("user-secret"));
-        assertFalse(rendered.contains("session-secret"));
-        assertTrue(rendered.contains("token=<redacted>"));
-        assertTrue(rendered.contains("sessionToken=<redacted>"));
+        assertThat(rendered)
+                .doesNotContain("user-secret", "session-secret")
+                .contains("token=<redacted>", "sessionToken=<redacted>");
     }
 
     @Test
@@ -27,7 +25,8 @@ class SessionReferenceTest {
 
         String rendered = reference.toString();
 
-        assertFalse(rendered.contains("fragment-secret"));
-        assertTrue(rendered.contains("token=<redacted>"));
+        assertThat(rendered)
+                .doesNotContain("fragment-secret")
+                .contains("token=<redacted>");
     }
 }
