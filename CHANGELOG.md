@@ -30,3 +30,4 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added redaction for Garmin session tokens embedded in `/token/...` path segments.
 - Added `LiveTrackClient.fetchSession(...)` for Garmin session-link payloads exposed through `/api/sessions/{sessionId}?token=...`.
 - Added configurable `LiveTrackClientOptions` User-Agent support, including `GARMIN_LIVETRACK_USER_AGENT` for manual integration tests.
+- Added source code usage examples under `docs/` and a safe `.env.example` template for manual integration-test setup.

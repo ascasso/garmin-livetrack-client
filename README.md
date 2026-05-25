@@ -33,6 +33,7 @@ Run the offline test suite:
 ```
 
 Manual Garmin integration testing is documented in [TESTING.md](TESTING.md).
+Source code usage examples are available in [docs/source-code-usage.md](docs/source-code-usage.md).
 
 ## Basic Usage
 

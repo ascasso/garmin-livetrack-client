@@ -57,3 +57,19 @@ GARMIN_LIVETRACK_EXPECT_ACTIVE='true' \
 GARMIN_LIVETRACK_USER_AGENT='Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:151.0) Gecko/20100101 Firefox/151.0' \
 ./gradlew integrationTest --rerun-tasks
 ```
+
+## Local Environment Files
+
+Gradle does not automatically load `.env` files. The repository includes `.env.example` as a safe template, while `.env` and `.env.*` are ignored so local token-bearing values are not committed.
+
+To use a local `.env` file in a shell session:
+
+```bash
+cp .env.example .env
+set -a
+. ./.env
+set +a
+./gradlew integrationTest --rerun-tasks
+```
+
+Keep real Garmin session URLs and tokens out of committed files, terminal transcripts, issue comments, and test fixtures.
