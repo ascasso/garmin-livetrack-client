@@ -13,6 +13,7 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added Jackson 3 dependency guidance through the Gradle version catalog.
 - Added project architecture and contribution guidance in `AGENTS.md`.
 - Added project goals, non-goals, and future ideas in `GOALS.md`.
+- Added EditorConfig rules for consistent UTF-8, LF, final newline, trailing whitespace, and indentation behavior.
 - Added Apache License 2.0.
 - Added Git repository metadata and ignore rules suitable for Gradle, IntelliJ IDEA, and GitHub.
 - Replaced generated sample code with the initial `io.github.ascasso.garmin.livetrack` API, immutable telemetry/configuration records, token-redacted session references, exception hierarchy, and focused JUnit tests.
