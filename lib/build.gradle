@@ -37,6 +37,7 @@ testing {
                     testTask.configure {
                         shouldRunAfter(test)
                         systemProperty 'garmin.livetrack.sessionUrl', providers.environmentVariable('GARMIN_LIVETRACK_SESSION_URL').orNull
+                        systemProperty 'garmin.livetrack.profileName', providers.environmentVariable('GARMIN_LIVETRACK_PROFILE_NAME').orNull
                     }
                 }
             }

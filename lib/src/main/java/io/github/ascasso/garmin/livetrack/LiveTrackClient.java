@@ -8,17 +8,24 @@ import io.github.ascasso.garmin.livetrack.internal.TelemetryJsonParser;
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Synchronous client for fetching Garmin LiveTrack telemetry snapshots.
  */
 public final class LiveTrackClient {
+    private static final URI DEFAULT_PROFILE_BASE_URI = URI.create("https://live.garmin.com/");
+    private static final Pattern PROFILE_NAME = Pattern.compile("[A-Za-z0-9_-]{3,64}");
+
     private final HttpClient httpClient;
     private final LiveTrackClientOptions options;
+    private final ProfileSessionResolver profileSessionResolver;
     private final TelemetryJsonParser telemetryJsonParser;
 
     public LiveTrackClient() {
@@ -32,7 +39,21 @@ public final class LiveTrackClient {
     public LiveTrackClient(HttpClient httpClient, LiveTrackClientOptions options) {
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
         this.options = Objects.requireNonNull(options, "options");
+        this.profileSessionResolver = new ProfileSessionResolver(httpClient, options);
         this.telemetryJsonParser = new TelemetryJsonParser();
+    }
+
+    public Optional<SessionReference> resolveActiveSession(String profileName) {
+        Objects.requireNonNull(profileName, "profileName");
+        if (!PROFILE_NAME.matcher(profileName).matches()) {
+            throw new IllegalArgumentException("profileName must be 3 to 64 letters, numbers, underscores, or dashes");
+        }
+        return resolveActiveSession(DEFAULT_PROFILE_BASE_URI.resolve(profileName));
+    }
+
+    public Optional<SessionReference> resolveActiveSession(URI profileUri) {
+        Objects.requireNonNull(profileUri, "profileUri");
+        return profileSessionResolver.resolve(profileUri);
     }
 
     public TelemetrySnapshot fetchTelemetry(SessionReference sessionReference) {

@@ -23,3 +23,7 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added Gradle test logging configuration and documented the no-SLF4J-until-needed test diagnostics policy.
 - Expanded unit coverage for the LiveTrack exception hierarchy.
 - Updated JUnit Jupiter from 6.0.1 to 6.1.0 after verifying no documented breaking changes affect the current test suite.
+- Added `LiveTrackClient.resolveActiveSession(...)` for resolving stable Garmin profile pages to optional active session references.
+- Added profile-resolution unit coverage for inactive profile pages, redirects, embedded session links, escaped Garmin JavaScript URLs, invalid profile names, and HTTP errors.
+- Added optional `GARMIN_LIVETRACK_PROFILE_NAME` manual integration testing for `https://live.garmin.com/{profileName}`.
+- Added redaction for Garmin session tokens embedded in `/token/...` path segments.

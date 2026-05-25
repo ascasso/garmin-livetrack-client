@@ -32,4 +32,13 @@ GARMIN_LIVETRACK_SESSION_URL='https://...' ./gradlew integrationTest
 
 Use a Garmin HTTPS session telemetry URL that is safe for temporary local testing. Do not commit real Garmin URLs, session tokens, credentials, logs, or captured payloads.
 
-Current limitation: the manual integration test expects a Garmin session telemetry URL that returns JSON for `LiveTrackClient`. Stable share URL resolution through redirects is planned separately.
+The manual telemetry integration test expects a Garmin session telemetry URL that returns JSON for `LiveTrackClient`.
+
+To manually check profile resolution without requiring an active session, set the Garmin LiveTrack profile name:
+
+```bash
+GARMIN_LIVETRACK_PROFILE_NAME='ascasso' ./gradlew integrationTest
+```
+
+The profile resolution test accepts both outcomes: an active session reference when Garmin exposes one, or an empty result when the profile currently has no public live session.
+Profile resolution checks the stable Garmin URL `https://live.garmin.com/{profileName}` and must not print or commit resolved session URLs or tokens.
