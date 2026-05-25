@@ -15,3 +15,4 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added project goals, non-goals, and future ideas in `GOALS.md`.
 - Added Apache License 2.0.
 - Added Git repository metadata and ignore rules suitable for Gradle, IntelliJ IDEA, and GitHub.
+- Replaced generated sample code with the initial `io.github.ascasso.garmin.livetrack` API, immutable telemetry/configuration records, token-redacted session references, exception hierarchy, and focused JUnit tests.
