@@ -1,0 +1,22 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# OS and editor metadata
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Logs and local environment
+*.log
+.env
+.env.*
