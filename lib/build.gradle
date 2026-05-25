@@ -27,6 +27,23 @@ testing {
             // Use JUnit Jupiter test framework
             useJUnitJupiter('6.0.1')
         }
+
+        integrationTest(JvmTestSuite) {
+            useJUnitJupiter('6.0.1')
+
+            dependencies {
+                implementation project()
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                        systemProperty 'garmin.livetrack.sessionUrl', providers.environmentVariable('GARMIN_LIVETRACK_SESSION_URL').orNull
+                    }
+                }
+            }
+        }
     }
 }
 
