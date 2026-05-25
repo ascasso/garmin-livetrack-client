@@ -43,12 +43,14 @@ LiveTrackClient client = new LiveTrackClient();
 
 client.resolveActiveSession("ascasso")
         .ifPresent(session -> {
-            TelemetrySnapshot snapshot = client.fetchTelemetry(session);
+            LiveTrackSession activeSession = client.fetchSession(session);
+            TelemetrySnapshot snapshot = activeSession.telemetrySnapshot();
             // Use snapshot.trackPoints().
         });
 ```
 
 For applications that already manage configuration, inject a `HttpClient` and `LiveTrackClientOptions` through the constructor.
+If Garmin requires a browser-like User-Agent for manual checks, configure one with `LiveTrackClientOptions.defaults().withUserAgent(...)`.
 
 ## License
 

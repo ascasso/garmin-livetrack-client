@@ -48,3 +48,12 @@ When you know the profile has an active session and want the test to fail if res
 ```bash
 GARMIN_LIVETRACK_PROFILE_NAME='ascasso' GARMIN_LIVETRACK_EXPECT_ACTIVE='true' ./gradlew integrationTest --rerun-tasks
 ```
+
+If Garmin rejects non-browser requests during manual testing, pass the browser User-Agent explicitly:
+
+```bash
+GARMIN_LIVETRACK_PROFILE_NAME='ascasso' \
+GARMIN_LIVETRACK_EXPECT_ACTIVE='true' \
+GARMIN_LIVETRACK_USER_AGENT='Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:151.0) Gecko/20100101 Firefox/151.0' \
+./gradlew integrationTest --rerun-tasks
+```

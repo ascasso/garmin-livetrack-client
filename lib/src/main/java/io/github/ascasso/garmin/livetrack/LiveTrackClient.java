@@ -4,7 +4,9 @@ import io.github.ascasso.garmin.livetrack.config.LiveTrackClientOptions;
 import io.github.ascasso.garmin.livetrack.exception.LiveTrackHttpException;
 import io.github.ascasso.garmin.livetrack.exception.LiveTrackParseException;
 import io.github.ascasso.garmin.livetrack.exception.LiveTrackTransportException;
+import io.github.ascasso.garmin.livetrack.internal.LiveTrackSessionJsonParser;
 import io.github.ascasso.garmin.livetrack.internal.TelemetryJsonParser;
+import io.github.ascasso.garmin.livetrack.model.LiveTrackSession;
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
 import java.io.IOException;
@@ -26,6 +28,7 @@ public final class LiveTrackClient {
     private final HttpClient httpClient;
     private final LiveTrackClientOptions options;
     private final ProfileSessionResolver profileSessionResolver;
+    private final LiveTrackSessionJsonParser liveTrackSessionJsonParser;
     private final TelemetryJsonParser telemetryJsonParser;
 
     public LiveTrackClient() {
@@ -40,6 +43,7 @@ public final class LiveTrackClient {
         this.httpClient = Objects.requireNonNull(httpClient, "httpClient");
         this.options = Objects.requireNonNull(options, "options");
         this.profileSessionResolver = new ProfileSessionResolver(httpClient, options);
+        this.liveTrackSessionJsonParser = new LiveTrackSessionJsonParser();
         this.telemetryJsonParser = new TelemetryJsonParser();
     }
 
@@ -57,12 +61,22 @@ public final class LiveTrackClient {
     }
 
     public TelemetrySnapshot fetchTelemetry(SessionReference sessionReference) {
-        Objects.requireNonNull(sessionReference, "sessionReference");
+        return fetchSession(sessionReference).telemetrySnapshot();
+    }
 
-        HttpRequest request = HttpRequest.newBuilder(sessionReference.sessionUri())
+    public LiveTrackSession fetchSession(SessionReference sessionReference) {
+        Objects.requireNonNull(sessionReference, "sessionReference");
+        URI requestUri = SessionApiUriResolver.resolve(sessionReference.sessionUri());
+
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(requestUri)
                 .timeout(options.requestTimeout())
-                .GET()
-                .build();
+                .header("Accept", "application/json")
+                .GET();
+        options.userAgent().ifPresent(userAgent -> requestBuilder.header("User-Agent", userAgent));
+        if (!requestUri.equals(sessionReference.sessionUri())) {
+            requestBuilder.header("Referer", sessionReference.sessionUri().toString());
+        }
+        HttpRequest request = requestBuilder.build();
 
         HttpResponse<String> response;
         try {
@@ -80,9 +94,17 @@ public final class LiveTrackClient {
         }
 
         try {
-            return telemetryJsonParser.parse(sessionReference, response.body());
+            if (SessionApiUriResolver.isSessionApiUri(requestUri)) {
+                return liveTrackSessionJsonParser.parse(sessionReference, response.body());
+            }
+            return new LiveTrackSession(
+                    sessionReference,
+                    Optional.empty(),
+                    Optional.empty(),
+                    true,
+                    telemetryJsonParser.parse(sessionReference, response.body()).trackPoints());
         } catch (IllegalArgumentException e) {
-            throw new LiveTrackParseException("Garmin LiveTrack telemetry payload could not be parsed", e);
+            throw new LiveTrackParseException("Garmin LiveTrack session payload could not be parsed", e);
         }
     }
 }

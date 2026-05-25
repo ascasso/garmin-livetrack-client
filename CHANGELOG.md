@@ -28,3 +28,5 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added optional `GARMIN_LIVETRACK_PROFILE_NAME` manual integration testing for `https://live.garmin.com/{profileName}`.
 - Added `GARMIN_LIVETRACK_EXPECT_ACTIVE` for stricter manual integration testing when a Garmin profile should currently expose an active session.
 - Added redaction for Garmin session tokens embedded in `/token/...` path segments.
+- Added `LiveTrackClient.fetchSession(...)` for Garmin session-link payloads exposed through `/api/sessions/{sessionId}?token=...`.
+- Added configurable `LiveTrackClientOptions` User-Agent support, including `GARMIN_LIVETRACK_USER_AGENT` for manual integration tests.

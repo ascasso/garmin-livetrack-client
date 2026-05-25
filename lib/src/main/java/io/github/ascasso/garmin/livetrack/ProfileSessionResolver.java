@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
 
 final class ProfileSessionResolver {
     private static final Pattern SESSION_LINK = Pattern.compile(
-            "(https?://[^\"'\\\\\\s<>]+/session/[^\"'\\\\\\s<>]+|/session/[^\"'\\\\\\s<>]+)");
+            "(https?://[^\"'\\\\\\s<>]+/session/[A-Za-z0-9-]+/token/[A-Za-z0-9]+(?:\\?[^\"'\\\\\\s<>]+)?"
+                    + "|/session/[A-Za-z0-9-]+/token/[A-Za-z0-9]+(?:\\?[^\"'\\\\\\s<>]+)?)");
 
     private final HttpClient httpClient;
     private final LiveTrackClientOptions options;
@@ -26,10 +27,11 @@ final class ProfileSessionResolver {
     }
 
     Optional<SessionReference> resolve(URI profileUri) {
-        HttpRequest request = HttpRequest.newBuilder(profileUri)
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(profileUri)
                 .timeout(options.requestTimeout())
-                .GET()
-                .build();
+                .GET();
+        options.userAgent().ifPresent(userAgent -> requestBuilder.header("User-Agent", userAgent));
+        HttpRequest request = requestBuilder.build();
 
         HttpResponse<String> response;
         try {

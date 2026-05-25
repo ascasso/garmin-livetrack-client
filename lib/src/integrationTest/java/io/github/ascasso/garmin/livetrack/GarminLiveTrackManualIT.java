@@ -2,6 +2,7 @@ package io.github.ascasso.garmin.livetrack;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.ascasso.garmin.livetrack.config.LiveTrackClientOptions;
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
 import java.net.URI;
@@ -18,7 +19,7 @@ class GarminLiveTrackManualIT {
         assertThat(host).isNotNull();
         assertThat(host.equals("garmin.com") || host.endsWith(".garmin.com")).isTrue();
 
-        LiveTrackClient client = new LiveTrackClient();
+        LiveTrackClient client = new LiveTrackClient(java.net.http.HttpClient.newHttpClient(), manualOptions());
 
         TelemetrySnapshot snapshot = client.fetchTelemetry(SessionReference.of(sessionUri));
 
@@ -29,7 +30,7 @@ class GarminLiveTrackManualIT {
     @Test
     @EnabledIfSystemProperty(named = "garmin.livetrack.profileName", matches = "[A-Za-z0-9_-]{3,64}")
     void resolvesActiveSessionFromGarminProfileName() {
-        LiveTrackClient client = new LiveTrackClient();
+        LiveTrackClient client = new LiveTrackClient(java.net.http.HttpClient.newHttpClient(), manualOptions());
 
         Optional<SessionReference> session = client.resolveActiveSession(System.getProperty("garmin.livetrack.profileName"));
 
@@ -44,5 +45,11 @@ class GarminLiveTrackManualIT {
                     .resolve(System.getProperty("garmin.livetrack.profileName")));
             assertThat(reference.sessionUri().getHost()).isNotNull();
         });
+    }
+
+    private static LiveTrackClientOptions manualOptions() {
+        String userAgent = System.getProperty("garmin.livetrack.userAgent");
+        LiveTrackClientOptions options = LiveTrackClientOptions.defaults();
+        return userAgent == null || userAgent.isBlank() ? options : options.withUserAgent(userAgent);
     }
 }
