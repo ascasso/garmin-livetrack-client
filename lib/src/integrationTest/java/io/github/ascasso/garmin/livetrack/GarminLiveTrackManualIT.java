@@ -3,9 +3,11 @@ package io.github.ascasso.garmin.livetrack;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.ascasso.garmin.livetrack.config.LiveTrackClientOptions;
+import io.github.ascasso.garmin.livetrack.model.SavedSession;
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -44,6 +46,20 @@ class GarminLiveTrackManualIT {
             assertThat(reference.userUri()).isEqualTo(URI.create("https://live.garmin.com/")
                     .resolve(System.getProperty("garmin.livetrack.profileName")));
             assertThat(reference.sessionUri().getHost()).isNotNull();
+        });
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "garmin.livetrack.profileName", matches = "[A-Za-z0-9_-]{3,64}")
+    void listsSavedSessionsFromGarminProfileName() {
+        LiveTrackClient client = new LiveTrackClient(java.net.http.HttpClient.newHttpClient(), manualOptions());
+
+        List<SavedSession> sessions = client.listSavedSessions(System.getProperty("garmin.livetrack.profileName"));
+
+        assertThat(sessions).isNotNull();
+        sessions.forEach(session -> {
+            assertThat(session.sessionReference().sessionUri().getHost()).isNotNull();
+            assertThat(session.toString()).contains("<redacted>");
         });
     }
 

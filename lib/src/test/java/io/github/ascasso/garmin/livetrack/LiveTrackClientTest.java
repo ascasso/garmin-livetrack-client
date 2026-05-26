@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import io.github.ascasso.garmin.livetrack.config.LiveTrackClientOptions;
 import io.github.ascasso.garmin.livetrack.exception.LiveTrackHttpException;
 import io.github.ascasso.garmin.livetrack.model.LiveTrackSession;
+import io.github.ascasso.garmin.livetrack.model.SavedSession;
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
@@ -102,6 +105,107 @@ class LiveTrackClientTest {
         LiveTrackClient client = new LiveTrackClient();
 
         assertThatThrownBy(() -> client.resolveActiveSession("../ascasso"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("profileName");
+    }
+
+    @Test
+    void listsSavedSessionsFromProfileEndpoint() throws IOException {
+        try (TestServer server = TestServer.start()) {
+            AtomicReference<HttpExchange> request = new AtomicReference<>();
+            server.handle("/ascasso", exchange -> {
+                exchange.getResponseHeaders().add("Set-Cookie", "session-cookie=cookie-value; Path=/");
+                TestServer.respond(
+                        exchange,
+                        200,
+                        """
+                        <meta name="csrf-token" content="csrf-value"/>
+                        <script>{"garminGuid":"7c3258ba-a0e9-4311-a19c-1dcc1d263be7"}</script>
+                        <article data-sentry-component="CompletedSession">
+                          <time dateTime="2026-05-23T16:12:30.000Z">May 23, 2026</time>
+                          <h2>
+                            <a title="Only first page"
+                               href="/session/first-page/token/htmltoken">
+                              Only first page
+                            </a>
+                          </h2>
+                        </article>
+                        """);
+            });
+            server.get(
+                    "/api/user/7c3258ba-a0e9-4311-a19c-1dcc1d263be7/profile-sessions",
+                    200,
+                    """
+                    {
+                      "completedSessions": [
+                        {
+                          "sessionId": "4213eb17-aeb1-8384-bd1b-06c4d0810201",
+                          "sessionToken": "secrettoken",
+                          "sessionName": "Maupin May 23, 2026",
+                          "startDate": "2026-05-23T19:38:15Z"
+                        },
+                        {
+                          "sessionId": "dcb80f13-e01f-86c2-804a-c84209c29501",
+                          "sessionToken": "othertoken",
+                          "sessionName": "Williams Apr 22, 2025",
+                          "startDate": "2025-04-22T16:54:30Z"
+                        }
+                      ]
+                    }
+                    """,
+                    request);
+            LiveTrackClient client = new LiveTrackClient(HttpClient.newHttpClient());
+
+            List<SavedSession> sessions = client.listSavedSessions(server.uri("/ascasso"));
+
+            assertThat(sessions).hasSize(2);
+            assertThat(sessions.getFirst().sessionName()).contains("Maupin May 23, 2026");
+            assertThat(sessions.getFirst().startedAt()).contains(Instant.parse("2026-05-23T19:38:15Z"));
+            assertThat(sessions.getFirst().sessionReference().userUri()).isEqualTo(server.uri("/ascasso"));
+            assertThat(sessions.getFirst().sessionReference().sessionUri())
+                    .isEqualTo(server.uri("/session/4213eb17-aeb1-8384-bd1b-06c4d0810201/token/secrettoken"));
+            assertThat(sessions.get(1).sessionName()).contains("Williams Apr 22, 2025");
+            assertThat(sessions.getFirst().toString()).doesNotContain("secrettoken");
+            assertThat(request.get().getRequestHeaders().getFirst("Livetrack-Csrf-Token")).isEqualTo("csrf-value");
+            assertThat(request.get().getRequestHeaders().getFirst("Cookie")).isEqualTo("session-cookie=cookie-value");
+            assertThat(request.get().getRequestURI().toString()).contains("limit=100");
+        }
+    }
+
+    @Test
+    void fallsBackToSavedSessionsFromProfilePageWhenEndpointIsUnavailable() throws IOException {
+        try (TestServer server = TestServer.start()) {
+            server.get(
+                    "/ascasso",
+                    200,
+                    """
+                    <meta name="csrf-token" content="csrf-value"/>
+                    <script>{"garminGuid":"7c3258ba-a0e9-4311-a19c-1dcc1d263be7"}</script>
+                    <article data-sentry-component="CompletedSession">
+                      <time dateTime="2026-05-23T16:12:30.000Z">May 23, 2026</time>
+                      <h2>
+                        <a title="Maupin May 23, 2026"
+                           href="/session/4213eb17-aeb1-8384-bd1b-06c4d0810201/token/secrettoken">
+                          Maupin May 23, 2026
+                        </a>
+                      </h2>
+                    </article>
+                    """);
+            server.get("/api/user/7c3258ba-a0e9-4311-a19c-1dcc1d263be7/profile-sessions", 403, "");
+            LiveTrackClient client = new LiveTrackClient(HttpClient.newHttpClient());
+
+            List<SavedSession> sessions = client.listSavedSessions(server.uri("/ascasso"));
+
+            assertThat(sessions).singleElement().satisfies(session ->
+                    assertThat(session.sessionName()).contains("Maupin May 23, 2026"));
+        }
+    }
+
+    @Test
+    void rejectsInvalidProfileNameWhenListingSavedSessions() {
+        LiveTrackClient client = new LiveTrackClient();
+
+        assertThatThrownBy(() -> client.listSavedSessions("../ascasso"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("profileName");
     }
@@ -220,6 +324,10 @@ class LiveTrackClientTest {
                 exchange.getResponseHeaders().set("Location", location);
                 respond(exchange, 302, "");
             });
+        }
+
+        void handle(String path, HttpHandler handler) {
+            server.createContext(path, handler);
         }
 
         private static void respond(HttpExchange exchange, int statusCode, String body) throws IOException {

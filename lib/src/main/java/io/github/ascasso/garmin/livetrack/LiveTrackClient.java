@@ -7,6 +7,7 @@ import io.github.ascasso.garmin.livetrack.exception.LiveTrackTransportException;
 import io.github.ascasso.garmin.livetrack.internal.LiveTrackSessionJsonParser;
 import io.github.ascasso.garmin.livetrack.internal.TelemetryJsonParser;
 import io.github.ascasso.garmin.livetrack.model.LiveTrackSession;
+import io.github.ascasso.garmin.livetrack.model.SavedSession;
 import io.github.ascasso.garmin.livetrack.model.SessionReference;
 import io.github.ascasso.garmin.livetrack.model.TelemetrySnapshot;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -58,6 +60,19 @@ public final class LiveTrackClient {
     public Optional<SessionReference> resolveActiveSession(URI profileUri) {
         Objects.requireNonNull(profileUri, "profileUri");
         return profileSessionResolver.resolve(profileUri);
+    }
+
+    public List<SavedSession> listSavedSessions(String profileName) {
+        Objects.requireNonNull(profileName, "profileName");
+        if (!PROFILE_NAME.matcher(profileName).matches()) {
+            throw new IllegalArgumentException("profileName must be 3 to 64 letters, numbers, underscores, or dashes");
+        }
+        return listSavedSessions(DEFAULT_PROFILE_BASE_URI.resolve(profileName));
+    }
+
+    public List<SavedSession> listSavedSessions(URI profileUri) {
+        Objects.requireNonNull(profileUri, "profileUri");
+        return profileSessionResolver.listSavedSessions(profileUri);
     }
 
     public TelemetrySnapshot fetchTelemetry(SessionReference sessionReference) {
