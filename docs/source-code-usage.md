@@ -1,6 +1,6 @@
 # Source Code Usage Examples
 
-These examples show the current public Java API shape. The API is still pre-`1.0.0`, so names may change before a stable release.
+These examples show the public Java API shape for `1.0.0`.
 
 ## Resolve an Active Session from a Profile Name
 

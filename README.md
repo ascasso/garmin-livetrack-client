@@ -4,7 +4,7 @@ Lightweight Java 25+ client library for Garmin LiveTrack / inReach public sessio
 
 ## Status
 
-Early development. The public API is not stable yet and may change before `1.0.0`.
+`1.0.0` stable release.
 
 ## Goals
 
