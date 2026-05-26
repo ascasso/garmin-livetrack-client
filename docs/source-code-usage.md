@@ -21,6 +21,31 @@ if (session.isEmpty()) {
 }
 ```
 
+## List Saved Sessions from a Profile Name
+
+Garmin also exposes completed public sessions from the stable profile. Use `listSavedSessions` to inspect those summaries, then pass a returned `SessionReference` to `fetchSession` or `fetchTelemetry`.
+When Garmin exposes paginated saved-session history, the client follows that pagination before returning the list.
+
+```java
+import io.github.ascasso.garmin.livetrack.LiveTrackClient;
+import io.github.ascasso.garmin.livetrack.model.SavedSession;
+import java.util.List;
+
+LiveTrackClient client = new LiveTrackClient();
+
+List<SavedSession> sessions = client.listSavedSessions("ascasso");
+
+for (SavedSession savedSession : sessions) {
+    String name = savedSession.sessionName().orElse("Unnamed session");
+    savedSession.startedAt().ifPresent(startedAt -> {
+        // Display or store the session start time.
+    });
+
+    // Avoid printing the raw URL; SessionReference.toString() redacts the token.
+    System.out.println(name + ": " + savedSession.sessionReference());
+}
+```
+
 ## Fetch the Current Session Payload
 
 Once you have a `SessionReference`, fetch the current Garmin session payload. Session URLs with `/session/{id}/token/{token}` are converted internally to Garmin's session API URL.

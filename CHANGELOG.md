@@ -31,3 +31,4 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 - Added `LiveTrackClient.fetchSession(...)` for Garmin session-link payloads exposed through `/api/sessions/{sessionId}?token=...`.
 - Added configurable `LiveTrackClientOptions` User-Agent support, including `GARMIN_LIVETRACK_USER_AGENT` for manual integration tests.
 - Added source code usage examples under `docs/` and a safe `.env.example` template for manual integration-test setup.
+- Added `LiveTrackClient.listSavedSessions(...)` for completed public profile sessions, including Garmin profile-session pagination support, saved-session summaries, token-redacted references, offline parser tests, and manual integration-test coverage.
