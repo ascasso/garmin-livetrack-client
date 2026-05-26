@@ -71,3 +71,7 @@ If Garmin requires a browser-like User-Agent for manual checks, configure one wi
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE).
+
+## Disclaimer
+
+This project is not affiliated with, endorsed by, or supported by Garmin.
