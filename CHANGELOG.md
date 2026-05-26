@@ -7,6 +7,8 @@ The format is inspired by Keep a Changelog: https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-26
+
 ### Added
 
 - Initialized Gradle Java library project targeting Java 25.

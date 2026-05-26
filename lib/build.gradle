@@ -3,6 +3,10 @@ plugins {
     id 'java-library'
 }
 
+base {
+    archivesName = 'garmin-livetrack-client'
+}
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -57,7 +61,7 @@ java {
 tasks.withType(Test).configureEach {
     testLogging {
         events 'failed', 'skipped'
-        exceptionFormat 'full'
+        exceptionFormat = 'full'
         showStandardStreams = false
     }
 }
