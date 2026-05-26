@@ -33,6 +33,25 @@ Run the offline test suite:
 ```
 
 Manual Garmin integration testing is documented in [TESTING.md](TESTING.md).
+Source code usage examples are available in [docs/source-code-usage.md](docs/source-code-usage.md).
+
+## Basic Usage
+
+Resolve the stable Garmin LiveTrack profile URL first. The result is empty when Garmin does not currently expose an active public session for that profile.
+
+```java
+LiveTrackClient client = new LiveTrackClient();
+
+client.resolveActiveSession("ascasso")
+        .ifPresent(session -> {
+            LiveTrackSession activeSession = client.fetchSession(session);
+            TelemetrySnapshot snapshot = activeSession.telemetrySnapshot();
+            // Use snapshot.trackPoints().
+        });
+```
+
+For applications that already manage configuration, inject a `HttpClient` and `LiveTrackClientOptions` through the constructor.
+If Garmin requires a browser-like User-Agent for manual checks, configure one with `LiveTrackClientOptions.defaults().withUserAgent(...)`.
 
 ## License
 

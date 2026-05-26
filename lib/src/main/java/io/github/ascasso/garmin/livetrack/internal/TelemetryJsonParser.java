@@ -33,23 +33,30 @@ public final class TelemetryJsonParser {
         } catch (JacksonException e) {
             throw new IllegalArgumentException("json must be valid telemetry JSON", e);
         }
+        return new TelemetrySnapshot(sessionReference, parseTrackPoints(root));
+    }
+
+    public List<TrackPoint> parseTrackPoints(JsonNode root) {
         JsonNode trackPoints = root.path("trackPoints");
+        if (trackPoints.isMissingNode()) {
+            trackPoints = root.path("points");
+        }
         if (trackPoints.isMissingNode() || trackPoints.isNull()) {
-            return new TelemetrySnapshot(sessionReference, List.of());
+            return List.of();
         }
         if (!trackPoints.isArray()) {
-            throw new IllegalArgumentException("trackPoints must be an array when present");
+            throw new IllegalArgumentException("trackPoints or points must be an array when present");
         }
 
         List<TrackPoint> parsedTrackPoints = new ArrayList<>();
         for (JsonNode trackPoint : trackPoints) {
             parsedTrackPoints.add(parseTrackPoint(trackPoint));
         }
-        return new TelemetrySnapshot(sessionReference, parsedTrackPoints);
+        return List.copyOf(parsedTrackPoints);
     }
 
     private static TrackPoint parseTrackPoint(JsonNode trackPoint) {
-        Position position = new Position(requiredDouble(trackPoint, "latitude"), requiredDouble(trackPoint, "longitude"));
+        Position position = parsePosition(trackPoint);
         Instant timestamp = parseTimestamp(trackPoint);
         Double altitude = optionalDouble(trackPoint, "altitude");
         if (altitude == null) {
@@ -58,8 +65,30 @@ public final class TelemetryJsonParser {
         return new TrackPoint(position, timestamp, altitude);
     }
 
+    private static Position parsePosition(JsonNode trackPoint) {
+        JsonNode position = trackPoint.path("position");
+        if (!position.isMissingNode() && !position.isNull()) {
+            return new Position(
+                    requiredDouble(position, "lat", "latitude"),
+                    requiredDouble(position, "lon", "longitude", "lng"));
+        }
+        return new Position(
+                requiredDouble(trackPoint, "latitude", "lat"),
+                requiredDouble(trackPoint, "longitude", "lon", "lng"));
+    }
+
     private static double requiredDouble(JsonNode node, String fieldName) {
+        return requiredDouble(node, fieldName, new String[0]);
+    }
+
+    private static double requiredDouble(JsonNode node, String fieldName, String... alternativeFieldNames) {
         JsonNode value = node.path(fieldName);
+        for (String alternativeFieldName : alternativeFieldNames) {
+            if (!value.isMissingNode() && !value.isNull()) {
+                break;
+            }
+            value = node.path(alternativeFieldName);
+        }
         if (value.isMissingNode() || value.isNull() || !value.isNumber()) {
             throw new IllegalArgumentException(fieldName + " is required");
         }

@@ -19,6 +19,7 @@ public final class TokenRedactor {
         value = redactQueryValue(value, "shareToken");
         value = redactQueryValue(value, "auth");
         value = redactFragmentValue(value, "token");
+        value = redactPathToken(value);
         return value;
     }
 
@@ -36,5 +37,9 @@ public final class TokenRedactor {
         return value.substring(0, fragmentStart + 1)
                 + value.substring(fragmentStart + 1)
                         .replaceAll("(?i)(" + parameterName + "=)[^&]*", "$1" + REDACTED);
+    }
+
+    private static String redactPathToken(String value) {
+        return value.replaceAll("(?i)(/token/)[^/?#]+", "$1" + REDACTED);
     }
 }

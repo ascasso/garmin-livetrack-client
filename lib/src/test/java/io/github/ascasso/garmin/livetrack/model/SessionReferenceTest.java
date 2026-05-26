@@ -29,4 +29,16 @@ class SessionReferenceTest {
                 .doesNotContain("fragment-secret")
                 .contains("token=<redacted>");
     }
+
+    @Test
+    void toStringRedactsTokenPathSegments() {
+        SessionReference reference = SessionReference.of(URI.create(
+                "https://livetrack.garmin.com/session/current/token/path-secret?unit=metric"));
+
+        String rendered = reference.toString();
+
+        assertThat(rendered)
+                .doesNotContain("path-secret")
+                .contains("/token/<redacted>");
+    }
 }

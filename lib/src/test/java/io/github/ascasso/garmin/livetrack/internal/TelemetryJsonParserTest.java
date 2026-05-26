@@ -27,6 +27,26 @@ class TelemetryJsonParserTest {
     }
 
     @Test
+    void parsesGarminSessionPointsAsTelemetry() {
+        TelemetrySnapshot snapshot = parser.parse(
+                sessionReference,
+                """
+                {
+                  "points": [
+                    {
+                      "position": {"lat": 45.0, "lon": -122.0},
+                      "dateTime": "2026-05-25T20:00:00Z"
+                    }
+                  ]
+                }
+                """);
+
+        assertThat(snapshot.trackPoints()).hasSize(1);
+        assertThat(snapshot.trackPoints().getFirst().position().latitude()).isEqualTo(45.0);
+        assertThat(snapshot.trackPoints().getFirst().position().longitude()).isEqualTo(-122.0);
+    }
+
+    @Test
     void rejectsTrackPointWithoutRequiredCoordinates() {
         assertThatThrownBy(() -> parser.parse(
                         sessionReference,

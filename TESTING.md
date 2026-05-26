@@ -32,4 +32,44 @@ GARMIN_LIVETRACK_SESSION_URL='https://...' ./gradlew integrationTest
 
 Use a Garmin HTTPS session telemetry URL that is safe for temporary local testing. Do not commit real Garmin URLs, session tokens, credentials, logs, or captured payloads.
 
-Current limitation: the manual integration test expects a Garmin session telemetry URL that returns JSON for `LiveTrackClient`. Stable share URL resolution through redirects is planned separately.
+The manual telemetry integration test expects a Garmin session telemetry URL that returns JSON for `LiveTrackClient`.
+
+To manually check profile resolution without requiring an active session, set the Garmin LiveTrack profile name:
+
+```bash
+GARMIN_LIVETRACK_PROFILE_NAME='ascasso' ./gradlew integrationTest
+```
+
+The profile resolution test accepts both outcomes: an active session reference when Garmin exposes one, or an empty result when the profile currently has no public live session.
+Profile resolution checks the stable Garmin URL `https://live.garmin.com/{profileName}` and must not print or commit resolved session URLs or tokens.
+
+When you know the profile has an active session and want the test to fail if resolution returns empty, opt into the stricter assertion:
+
+```bash
+GARMIN_LIVETRACK_PROFILE_NAME='ascasso' GARMIN_LIVETRACK_EXPECT_ACTIVE='true' ./gradlew integrationTest --rerun-tasks
+```
+
+If Garmin rejects non-browser requests during manual testing, pass the browser User-Agent explicitly:
+
+```bash
+GARMIN_LIVETRACK_PROFILE_NAME='ascasso' \
+GARMIN_LIVETRACK_EXPECT_ACTIVE='true' \
+GARMIN_LIVETRACK_USER_AGENT='Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:151.0) Gecko/20100101 Firefox/151.0' \
+./gradlew integrationTest --rerun-tasks
+```
+
+## Local Environment Files
+
+Gradle does not automatically load `.env` files. The repository includes `.env.example` as a safe template, while `.env` and `.env.*` are ignored so local token-bearing values are not committed.
+
+To use a local `.env` file in a shell session:
+
+```bash
+cp .env.example .env
+set -a
+. ./.env
+set +a
+./gradlew integrationTest --rerun-tasks
+```
+
+Keep real Garmin session URLs and tokens out of committed files, terminal transcripts, issue comments, and test fixtures.
